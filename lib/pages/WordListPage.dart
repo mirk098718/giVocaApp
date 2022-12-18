@@ -8,6 +8,7 @@ import 'package:gi_english_app/util/WidgetUtil.dart';
 
 import '../class/Word.dart';
 import '../util/Palette.dart';
+import '../widget/WordCardGridView.dart';
 
 // class A {}
 //
@@ -35,7 +36,6 @@ class WordListPage extends StatefulWidget {
 
 class _WordListPageState extends State<WordListPage> {
   List<Word> wordList = [];
-  List<Widget> wordCardList = [];
   TextEditingController wordController = TextEditingController();
   TextEditingController partController = TextEditingController();
   TextEditingController meaningController = TextEditingController();
@@ -191,7 +191,7 @@ class _WordListPageState extends State<WordListPage> {
             ),
             roundElevatedButtonForCard("단어추가", Palette.mainPurple, context),
             SizedBox(height: 20),
-            Column(children: wordCardList)
+            WordCardGridView(wordList:wordList),
           ],
         ),
       ]),
@@ -216,25 +216,6 @@ class _WordListPageState extends State<WordListPage> {
     );
   }
 
-  Widget makeWordCard(Word word){
-    return Container(
-      margin: EdgeInsets.all(10),
-      color: Colors.blue,
-      width: 150,
-      height: 150,
-      child: Card(
-        color: Colors.red,
-        child: Column( mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(word.word),
-            Text(word.part),
-            Text(word.meaning),
-            Text(word.example1),
-            Text(word.example2),
-          ],),
-      ),
-    );
-  }
 
   void showDialogToAddWord(BuildContext context, String content) {
     wordController.text = "";
@@ -306,8 +287,6 @@ class _WordListPageState extends State<WordListPage> {
     localAddWord(){
       print("new word");
       wordList.add(newWord);
-      Widget newWordCard = makeWordCard(newWord);
-      wordCardList.add(newWordCard);
     }
 
     if(wordList.isEmpty) {
@@ -325,8 +304,6 @@ class _WordListPageState extends State<WordListPage> {
         }
       };
     }
-
-    print(wordCardList);
 
     setState(() {});
 
