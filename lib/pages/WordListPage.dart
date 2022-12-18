@@ -34,15 +34,13 @@ class WordListPage extends StatefulWidget {
 }
 
 class _WordListPageState extends State<WordListPage> {
-
-  static List<Word> wordList = [];
-  static List<Widget> wordCardList = [];
+  List<Word> wordList = [];
+  List<Widget> wordCardList = [];
   TextEditingController wordController = TextEditingController();
   TextEditingController partController = TextEditingController();
   TextEditingController meaningController = TextEditingController();
   TextEditingController example1Controller = TextEditingController();
   TextEditingController example2Controller = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -194,12 +192,6 @@ class _WordListPageState extends State<WordListPage> {
             roundElevatedButtonForCard("단어추가", Palette.mainPurple, context),
             SizedBox(height: 20),
             Column(children: wordCardList)
-
-
-
-
-
-
           ],
         ),
       ]),
@@ -213,7 +205,7 @@ class _WordListPageState extends State<WordListPage> {
       height: 50,
       child: ElevatedButton(
         onPressed: () {
-          addWordDialogue(context, "새단어 추가", wordController,partController,meaningController,example1Controller,example2Controller);
+          showDialogToAddWord(context, "새단어 추가");
         },
         child: Text(text, textAlign: TextAlign.center,style: TextStyle(
             fontFamily: "Oneprettynight", color: Palette.white, fontSize: 12),),
@@ -224,7 +216,7 @@ class _WordListPageState extends State<WordListPage> {
     );
   }
 
-  static Widget makeWordCard(Word word){
+  Widget makeWordCard(Word word){
     return Container(
       margin: EdgeInsets.all(10),
       color: Colors.blue,
@@ -244,12 +236,16 @@ class _WordListPageState extends State<WordListPage> {
     );
   }
 
-  static void addWordDialogue(BuildContext context, String content, TextEditingController controller,
-      TextEditingController controller2,TextEditingController controller3,TextEditingController
-      controller4,TextEditingController controller5) {
+  void showDialogToAddWord(BuildContext context, String content) {
+    wordController.text = "";
+    partController.text = "";
+    meaningController.text = "";
+    example1Controller.text = "";
+    example2Controller.text = "";
     showDialog(
       context: context,
       builder: (context) {
+        //~~~
         return AlertDialog(
             content: Container(
               width: double.infinity,
@@ -267,11 +263,11 @@ class _WordListPageState extends State<WordListPage> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 20,),
-                    WidgetUtil.textFieldWithLabel("단어 : ", controller),
-                    WidgetUtil.textFieldWithLabel("품사 : ", controller2),
-                    WidgetUtil.textFieldWithLabel("뜻 : ", controller3),
-                    WidgetUtil.textFieldWithLabel("예문 1 : ", controller4),
-                    WidgetUtil.textFieldWithLabel("예문 2 : ", controller5),
+                    WidgetUtil.textFieldWithLabel("단어 : ", wordController),
+                    WidgetUtil.textFieldWithLabel("품사 : ", partController),
+                    WidgetUtil.textFieldWithLabel("뜻 : ", meaningController),
+                    WidgetUtil.textFieldWithLabel("예문 1 : ", example1Controller),
+                    WidgetUtil.textFieldWithLabel("예문 2 : ", example2Controller),
                     SizedBox(
                       height: 60,
                     ),
@@ -283,26 +279,7 @@ class _WordListPageState extends State<WordListPage> {
                           backgroundColor: Palette.mainPurple,
                           foregroundColor: Palette.white,
                         ),
-                        onPressed: (){
-
-                          Word newWord = Word(controller.text, controller3.text,
-                              part: controller2.text, example1: controller4.text,
-                              example2: controller5.text );
-
-                          for (Word word in wordList) {
-                            if (newWord.word.toLowerCase() == word.word.toLowerCase()&& newWord.meaning == word.meaning){
-                              SnackbarUtil.showSnackBar("해당 단어가 이미 있습니다.", context);
-                            }
-                            else {
-                              wordList.add(newWord);
-                              Widget newWordCard = makeWordCard(newWord);
-                              wordCardList.add(newWordCard);
-                            };
-                          };
-                          print(wordCardList);
-                          MenuUtil.pop(context);
-
-                        },
+                        onPressed: addWord,
                         child: Text(
                           "ADD",
                           style: TextStyle(fontFamily: "Jalnan"),
@@ -315,6 +292,45 @@ class _WordListPageState extends State<WordListPage> {
             ));
       },
     );
+  }
+
+  void addWord(){
+    Word newWord = Word(wordController.text, meaningController.text,
+        part: partController.text, example1: example1Controller.text,
+        example2: example2Controller.text );
+
+    //단어라는 물건이 있음.
+    //상자에 이거를 언제 추가하면될까요?
+    //- 상자에 해당 단어가 없다면, 넣는다.
+    //- 상자를 전부 돌아서, 없으면 넣을수있는거죠.
+    localAddWord(){
+      print("new word");
+      wordList.add(newWord);
+      Widget newWordCard = makeWordCard(newWord);
+      wordCardList.add(newWordCard);
+    }
+
+    if(wordList.isEmpty) {
+      localAddWord();
+    }
+    else {
+      for (Word eachWord in wordList) {
+        if (newWord.word.toLowerCase() == eachWord.word.toLowerCase() &&
+            newWord.meaning == eachWord.meaning) {
+          SnackbarUtil.showSnackBar("해당 단어가 이미 있습니다.", context);
+        }
+        else {
+          localAddWord();
+          break;
+        }
+      };
+    }
+
+    print(wordCardList);
+
+    setState(() {});
+
+    MenuUtil.pop(context);
   }
 
   Widget gTextField(String hintText) {
