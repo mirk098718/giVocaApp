@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gi_english_app/pages/DictionaryPage.dart';
 import 'package:gi_english_app/util/MenuUtil.dart';
 import 'package:gi_english_app/util/MyWidget.dart';
 import 'package:gi_english_app/util/SnackbarUtil.dart';
